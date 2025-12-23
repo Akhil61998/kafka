@@ -1,0 +1,44 @@
+
+Run the following commands to run the kafka 
+
+1) Run Zookeeper :- C:\kafka_2.13-3.9.1\bin\windows>zookeeper-server-start.bat ..\..\config\zookeeper.properties
+
+2) Run kafka     :- C:\kafka_2.13-3.9.1\bin\windows>kafka-server-start.bat ..\..\config\server.properties
+
+
+	if you get error while running zookeeper or kafka do the following 
+
+		1) C:\tmp - if kafka-logs or zookeeper present delete
+		2)run : tasklist | findstr java 
+ 	
+			you will get the following result 
+
+				C:\kafka_2.13-3.9.1\bin\windows>tasklist | findstr java
+				java.exe                     23880 Console                    2     54,928 K
+				java.exe                      1528 Console                    2    173,384 K
+
+			Kill the processes:
+
+				taskkill /PID 23880 /F
+				taskkill /PID 1528 /F
+
+3) Create a Topic :- C:\kafka_2.13-3.9.1\bin\windows>kafka-topics.bat --create --topic my-topic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3
+
+4)Start Producer :- C:\kafka_2.13-3.9.1\bin\windows>kafka-console-producer.bat --broker-list localhost:9092 --topic my-topic
+		    >Hi
+                    >Sending message from Producer
+		    >
+
+5)Start Consumer :-C:\kafka_2.13-3.9.1\bin\windows>kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic --from-beginning
+       		   Hi
+		   Sending message from Producer
+
+6) Delete Topic :- C:\kafka_2.13-3.9.1\bin\windows>kafka-topics.bat --delete --topic my-topic --bootstrap-server localhost:9092
+
+
+
+
+
+
+
+
