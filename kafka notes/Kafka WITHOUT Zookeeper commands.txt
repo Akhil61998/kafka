@@ -1,0 +1,77 @@
+add the below in the following path ;C:\kafka\config\server.properties
+
+############################# KRaft settings #############################
+
+process.roles=broker,controller
+node.id=1
+
+#controller.quorum.voters=1@localhost:9093
+
+listeners=PLAINTEXT://localhost:9092,CONTROLLER://localhost:9093
+listener.security.protocol.map=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+
+controller.listener.names=CONTROLLER
+
+log.dirs=C:/kafka/data
+
+==========================================================================================================================================
+
+then create data folder and then follow the below steps 
+
+==========================================================================================================================================
+
+1️⃣ Verify Kafka is stopped ; netstat -ano | findstr 9092
+
+Clean data directory;rmdir /S /Q C:\kafka\data & mkdir C:\kafka\data
+
+
+Generate cluster UUID; C:\kafka\bin\windows>kafka-storage.bat random-uuid
+			2026-01-05T16:33:05.053539900Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+			krmnxHg1QXSybvGZfKQJEQ
+
+Format KRaft storage (PASTE your UUID); 
+C:\kafka\bin\windows>  kafka-storage.bat format --standalone -t krmnxHg1QXSybvGZfKQJEQ -c C:\kafka\config\server.properties
+2026-01-05T16:41:27.495727500Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+Formatting dynamic metadata voter directory C:/kafka/data with metadata.version 4.1-IV1.
+
+Verify metadata;C:\kafka\bin\windows>dir C:\kafka\data
+	You must see:			     05-01-2026  22:11               129 meta.properties
+
+START KAFKA ; (KRaft – Single Node)
+
+	C:\kafka\bin\windows> 
+
+	Start Kafka broker in above path 
+			 kafka-server-start.bat C:\kafka\config\server.properties
+
+	Confirm Kafka is running ; C:\kafka\bin\windows>netstat -ano | findstr 9092
+ 			   	   TCP    0.0.0.0:9092           0.0.0.0:0              LISTENING       10564
+ 			           TCP    [::]:9092              [::]:0                 LISTENING       10564
+
+Create topic;
+C:\kafka\bin\windows>   kafka-topics.bat --bootstrap-server localhost:9092 --create --topic my-topic --partitions 1 --replication-factor 1
+2026-01-05T16:49:57.830786400Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+Created topic my-topic.
+
+List topics;
+C:\kafka\bin\windows>  kafka-topics.bat --bootstrap-server localhost:9092 --list
+2026-01-05T16:50:51.951530600Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+my-topic
+
+Produce message;
+C:\kafka\bin\windows>   kafka-console-producer.bat --bootstrap-server localhost:9092 --topic my-topic
+2026-01-05T16:51:33.433120600Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+>hi
+>hello
+>sending message from kafka producer
+>
+
+Consume message (new window);
+C:\kafka\bin\windows>  kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic my-topic --from-beginning
+2026-01-05T16:53:10.218532200Z main ERROR Reconfiguration failed: No configuration found for '266474c2' at 'null' in 'null'
+hi
+hello
+sending message from kafka producer
+
+delete topic;
+C:\kafka\bin\windows> kafka-topics.bat --bootstrap-server localhost:9092 --delete --topic my-topic
